@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f4ef"><meta name="description" content="Погода рядом: текущая погода, прогноз по часам и на неделю в любом городе мира">
+<title>Погода рядом</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='28' fill='%23efb64d'/%3E%3C/svg%3E"><link rel="stylesheet" href="./style.css">
+<script src="./app.js" defer></script>
+</head>
+<body>
+<div class="shell">
+<header><a class="brand" href="./"><span class="brand-icon">☀</span> погода рядом</a><span class="header-note">Меньше шума. Больше неба</span></header>
+<main>
+<section class="intro"><div><p class="eyebrow">ВАШ ПЛАН НА СЕГОДНЯ</p><h1>Какая там погода?</h1><p class="muted">В любом городе. В нужный момент</p></div><span class="intro-mark" aria-hidden="true">↗</span></section>
+<section class="search-section" aria-label="Поиск города">
+<form id="search-form" role="search"><label for="city" class="sr-only">Название города</label><span class="search-icon" aria-hidden="true">⌕</span><input id="city" type="search" placeholder="Найти город, например Казань" autocomplete="off" maxlength="120" aria-describedby="search-status" aria-controls="suggestions"><button class="search-submit" type="submit">Найти <span aria-hidden="true">↗</span></button></form>
+<div id="suggestions" class="suggestions" hidden></div><p id="search-status" class="search-status" role="status" aria-live="polite">Начните вводить название и выберите город</p>
+</section>
+<div id="weather-status" class="notice" role="status" aria-live="polite" hidden></div>
+<button id="retry" class="retry" hidden>Попробовать ещё раз</button>
+<div id="weather" hidden>
+<section class="current" aria-label="Текущая погода"><div class="current-main"><div class="location"><span class="live-dot"></span><span id="place"></span></div><h2 id="city-name"></h2><p id="local-time" class="muted"></p><div class="temperature"><span id="temperature"></span><span class="degree">°</span><span class="unit">C</span></div><p id="condition" class="condition"></p><p id="feels" class="muted"></p></div><div class="sky-art" id="sky-art" aria-hidden="true"><div class="sun"></div><div class="cloud cloud-back"></div><div class="cloud"></div><div class="rain-lines"></div></div><span class="now-tag">СЕЙЧАС</span></section>
+<section class="metrics" aria-label="Подробности"><div><span class="metric-label">↝ &nbsp; Ветер</span><p><span id="wind"></span> <small>м/с</small></p></div><div><span class="metric-label">♧ &nbsp; Влажность</span><p><span id="humidity"></span> <small>%</small></p></div><div><span class="metric-label">☂ &nbsp; Осадки сейчас</span><p><span id="precipitation"></span> <small>мм</small></p></div><div><span class="metric-label">◉ &nbsp; Давление</span><p><span id="pressure"></span> <small>гПа</small></p></div></section>
+<section class="forecast"><div class="section-heading"><h2>Ближайшие часы</h2><span>По местному времени</span></div><div id="hourly" class="hourly" tabindex="0" aria-label="Почасовой прогноз, прокрутите вправо"></div></section>
+<section class="forecast"><div class="section-heading"><h2>Неделя впереди</h2><span>7 дней</span></div><div id="daily" class="daily"></div></section>
+</div>
+</main>
+<footer><span>За окном меняется. Вы в курсе</span><a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Данные Open-Meteo ↗</a></footer>
+</div>
+</body></html>

@@ -1,0 +1,52 @@
+import sys
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+ROOT = Path(__file__).parent
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+    page = browser.new_page(viewport={'width':1280,'height':1050}, device_scale_factor=1)
+    errors=[]
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    page.on('requestfailed', lambda request: print('REQUEST FAILED', request.url, request.failure, flush=True))
+    page.on('console', lambda message: print('CONSOLE', message.text, flush=True))
+    page.goto(sys.argv[1] if len(sys.argv) > 1 else ROOT.joinpath('index.html').as_uri())
+    print('PAGE', page.url, page.title(), flush=True)
+    page.locator('#weather').wait_for(state='visible', timeout=30000)
+    assert page.locator('.day').count() == 7
+    assert page.locator('.hour').count() == 12
+    page.locator('#city').fill('Tokyo')
+    page.locator('#suggestions button').first.wait_for()
+    page.locator('#suggestions button').first.click()
+    page.locator('#weather').wait_for(state='visible', timeout=30000)
+    assert 'Токио' in page.locator('#city-name').inner_text()
+    page.reload()
+    page.locator('#weather').wait_for(state='visible', timeout=30000)
+    assert 'Токио' in page.locator('#city-name').inner_text()
+    page.screenshot(path=str(ROOT.parent / '.media' / 'weather-desktop.png'), full_page=True)
+    page.set_viewport_size({'width':390,'height':844})
+    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+    page.screenshot(path=str(ROOT.parent / '.media' / 'weather-mobile.png'), full_page=True)
+    page.locator('#city').fill('London')
+    page.locator('#city').press('Escape')
+    page.wait_for_timeout(600)
+    assert page.locator('#suggestions').is_hidden()
+    page.locator('#city').fill('zzzzxxyynotacity')
+    page.wait_for_function("document.querySelector('#search-status').textContent.includes('не найден')")
+    page.locator('#city').fill('')
+    page.locator('.search-submit').click()
+    assert '2 буквы' in page.locator('#search-status').inner_text()
+    page.route('https://geocoding-api.open-meteo.com/**', lambda route: route.abort())
+    page.locator('#city').fill('Paris')
+    page.wait_for_function("document.querySelector('#search-status').textContent.includes('Не удалось')")
+    page.unroute('https://geocoding-api.open-meteo.com/**')
+    page.route('https://api.open-meteo.com/**', lambda route: route.abort())
+    page.locator('#city').fill('Berlin')
+    page.locator('#suggestions button').first.wait_for()
+    page.locator('#suggestions button').first.click()
+    page.locator('#retry').wait_for(state='visible')
+    page.unroute('https://api.open-meteo.com/**')
+    page.locator('#retry').click()
+    page.locator('#weather').wait_for(state='visible', timeout=30000)
+    assert not errors, errors
+    print('PASS BROWSER: live weather, search, persistence, 7 days, 12 hours, mobile width, empty input, no results, network failures, retry, no JS errors')
+    browser.close()

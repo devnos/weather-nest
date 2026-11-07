@@ -1,0 +1,15 @@
+const assert = require('node:assert/strict');
+const { weatherInfo, value, validPlace, forecastUrl, nextHours } = require('./app.js');
+assert.equal(weatherInfo(0, 0)[0], 'Ясная ночь');
+for (const code of [71, 73, 75, 77, 85, 86]) assert.equal(weatherInfo(code)[2], 'snow');
+assert.equal(weatherInfo(999)[0], 'Нет данных о состоянии неба');
+assert.equal(value(null), '—'); assert.equal(value(0), '0');
+assert.ok(validPlace({name:'東京',latitude:35,longitude:139}));
+assert.ok(!validPlace({name:'x',latitude:91,longitude:0}));
+assert.ok(!validPlace({name:'x',latitude:'55',longitude:0}));
+const url = new URL(forecastUrl({latitude:0,longitude:0}));
+assert.equal(url.searchParams.get('wind_speed_unit'), 'ms');
+assert.equal(url.searchParams.get('timezone'), 'auto');
+const times = ['2026-11-07T22:00', '2026-11-07T23:00', '2026-11-08T00:00'];
+assert.deepEqual(nextHours({current:{time:'2026-11-07T23:45'},hourly:{time:times}}).map(x=>x.index), [1,2]);
+console.log('PASS: weather codes, missing values, coordinates, API units, midnight forecast');
