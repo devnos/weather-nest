@@ -1,0 +1,6 @@
+Публикация: https://devnos.github.io/weather-nest/
+Репозиторий: https://github.com/devnos/weather-nest
+GitHub Pages: built; HTTP 200
+GitHub Actions Check app: success
+Браузерный тест публичного сайта: PASS
+Проверено: реальный API, выбор города, сохранение города, 7 дней, 12 часов, мобильный экран 390px, пустой запрос, неизвестный город, искусственный отказ сети, повторная попытка, отсутствие JS ошибок

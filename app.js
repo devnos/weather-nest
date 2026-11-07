@@ -1,15 +1,15 @@
 'use strict';
 const $ = id => document.getElementById(id);
 function weatherInfo(code, day = 1) {
-  if (code === 0) return [day ? 'Ясно' : 'Ясная ночь', day ? '☀' : '☾', day ? 'clear' : 'clear night'];
-  if ([1, 2].includes(code)) return ['Переменная облачность', day ? '⛅' : '☾', day ? '' : 'night'];
-  if (code === 3) return ['Пасмурно', '☁', 'overcast'];
-  if ([45, 48].includes(code)) return ['Туман', '≋', 'overcast'];
-  if ([51, 53, 55, 56, 57].includes(code)) return ['Морось', '☂', 'rain'];
-  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return ['Дождь', '☂', 'rain'];
-  if ([71, 73, 75, 77, 85, 86].includes(code)) return ['Снег', '❄', 'snow'];
-  if ([95, 96, 99].includes(code)) return ['Гроза', 'ϟ', 'rain'];
-  return ['Нет данных о состоянии неба', '◇', 'overcast'];
+  if (code === 0) return [day ? 'Ясно' : 'Ясная ночь', day ? 'sun' : 'moon', day ? 'clear' : 'clear night'];
+  if ([1, 2].includes(code)) return ['Переменная облачность', day ? 'cloud-sun' : 'cloud-moon', day ? '' : 'night'];
+  if (code === 3) return ['Пасмурно', 'cloud', 'overcast'];
+  if ([45, 48].includes(code)) return ['Туман', 'cloud-fog', 'overcast'];
+  if ([51, 53, 55, 56, 57].includes(code)) return ['Морось', 'cloud-drizzle', 'rain'];
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return ['Дождь', 'cloud-rain', 'rain'];
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return ['Снег', 'snowflake', 'snow'];
+  if ([95, 96, 99].includes(code)) return ['Гроза', 'cloud-lightning', 'rain'];
+  return ['Нет данных о состоянии неба', 'circle-question-mark', 'overcast'];
 }
 const value = (n, digits = 0) => Number.isFinite(n) ? new Intl.NumberFormat('ru-RU', { maximumFractionDigits: digits }).format(n) : '—';
 function validPlace(p) { return p && typeof p.name === 'string' && Number.isFinite(p.latitude) && Math.abs(p.latitude) <= 90 && Number.isFinite(p.longitude) && Math.abs(p.longitude) <= 180; }
@@ -19,7 +19,7 @@ function forecastUrl(p) {
 }
 function nextHours(data) { const hour = data.current.time.slice(0, 13); return data.hourly.time.map((time, index) => ({time, index})).filter(x => x.time.slice(0, 13) >= hour).slice(0, 12); }
 function el(tag, className, text) { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; }
-function icon(code, day) { const info = weatherInfo(code, day); const node = el('span', 'weather-icon', info[1]); node.setAttribute('role', 'img'); node.setAttribute('aria-label', info[0]); return node; }
+function icon(code, day) { const info = weatherInfo(code, day); const node = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); node.setAttribute('class', 'icon weather-icon'); const use = document.createElementNS('http://www.w3.org/2000/svg', 'use'); use.setAttribute('href', '#icon-' + info[1]); node.append(use); node.setAttribute('role', 'img'); node.setAttribute('aria-label', info[0]); return node; }
 let searchController, weatherController, searchVersion = 0, weatherVersion = 0, timer, selected;
 async function json(url, controller) {
   const timeout = setTimeout(() => controller.abort('timeout'), 15000);

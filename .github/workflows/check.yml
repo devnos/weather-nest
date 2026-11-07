@@ -9,4 +9,5 @@ jobs:
         with:
           node-version: '24'
       - run: node --check app.js
+      - run: node --check theme.js
       - run: node test.cjs
